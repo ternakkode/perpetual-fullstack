@@ -1,0 +1,2279 @@
+{
+  "openapi": "3.0.3",
+  "paths": {
+    "/health": {
+      "get": {
+        "operationId": "HealthController_getHealth",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Service is healthy",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "timestamp": {
+                      "type": "string",
+                      "format": "date-time"
+                    },
+                    "uptime": {
+                      "type": "number",
+                      "example": 123.45
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        "summary": "Health check endpoint",
+        "tags": [
+          "Health"
+        ]
+      }
+    },
+    "/agentWallet": {
+      "get": {
+        "description": "Check if an agent wallet exists for the authenticated user and retrieve its status. Agent wallets are used to execute trades on Hyperliquid Exchange on behalf of users and are valid for 180 days with automatic 30-day rotations.",
+        "operationId": "AgentWalletController_getAgentWallet",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Agent wallet found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetAgentWalletResponseDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Agent wallet not found"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get agent wallet status",
+        "tags": [
+          "Agent Wallet"
+        ]
+      },
+      "post": {
+        "description": "Create a new agent wallet for the authenticated user. The wallet private key is securely stored and encrypted within Brother Terminal. After creation, the user must approve the wallet through Hyperliquid's agent wallet approval process.",
+        "operationId": "AgentWalletController_createAgentWallet",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": "Agent wallet created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CreateAgentWalletResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create a new agent wallet",
+        "tags": [
+          "Agent Wallet"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "description": "Authenticate a user using EIP712 signature or API key and return access/refresh tokens",
+        "operationId": "AuthController_authenticate",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Authentication request with EIP712 signature or API key",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AuthenticateRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AuthenticateResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input data"
+          },
+          "401": {
+            "description": "Unauthorized - authentication failed"
+          }
+        },
+        "summary": "Authenticate user",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/eip712-message": {
+      "get": {
+        "description": "Generate EIP712 structured data for client-side signing",
+        "operationId": "AuthController_getEIP712Message",
+        "parameters": [
+          {
+            "name": "address",
+            "required": true,
+            "in": "query",
+            "description": "User wallet address",
+            "schema": {
+              "example": "0x1234567890123456789012345678901234567890",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "EIP712 message generated successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/GetEIP712MessageResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid parameters"
+          }
+        },
+        "summary": "Get EIP712 message to sign",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/refresh": {
+      "post": {
+        "description": "Use a valid refresh token to obtain a new access token and refresh token",
+        "operationId": "AuthController_refreshToken",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Refresh token request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/RefreshTokenRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Token refresh successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RefreshTokenResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or expired refresh token"
+          }
+        },
+        "summary": "Refresh access token",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/auth/logout": {
+      "post": {
+        "description": "Invalidate refresh token and log out the user",
+        "operationId": "AuthController_logout",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Logout request with refresh token",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LogoutRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Logout successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LogoutResponseDto"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid refresh token"
+          }
+        },
+        "summary": "Logout user",
+        "tags": [
+          "Authentication"
+        ]
+      }
+    },
+    "/api-keys": {
+      "post": {
+        "description": "Create a new API key for the authenticated user",
+        "operationId": "ApiKeysController_createApiKey",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "API key creation request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "description": "Optional name for the API key",
+                    "example": "Trading Bot Key"
+                  }
+                },
+                "$ref": "#/components/schemas/Object"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "API key created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "id": {
+                      "type": "string"
+                    },
+                    "apiKey": {
+                      "type": "string"
+                    },
+                    "name": {
+                      "type": "string",
+                      "nullable": true
+                    },
+                    "createdAt": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing token"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Create API key",
+        "tags": [
+          "API Keys"
+        ]
+      },
+      "get": {
+        "description": "Get all API keys for the authenticated user",
+        "operationId": "ApiKeysController_getUserApiKeys",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "API keys retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "apiKeys": {
+                      "type": "array",
+                      "items": {
+                        "type": "object",
+                        "properties": {
+                          "id": {
+                            "type": "string"
+                          },
+                          "name": {
+                            "type": "string",
+                            "nullable": true
+                          },
+                          "isActive": {
+                            "type": "boolean"
+                          },
+                          "lastUsedAt": {
+                            "type": "string",
+                            "format": "date-time",
+                            "nullable": true
+                          },
+                          "createdAt": {
+                            "type": "string",
+                            "format": "date-time"
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized - invalid or missing token"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get user API keys",
+        "tags": [
+          "API Keys"
+        ]
+      }
+    },
+    "/beta-registration/public": {
+      "post": {
+        "description": "Register a wallet address for public beta with Twitter verification",
+        "operationId": "BetaRegistrationController_registerPublic",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Public registration request with Twitter details",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreatePublicRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BetaRegistrationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input data"
+          },
+          "409": {
+            "description": "Conflict - wallet already registered"
+          }
+        },
+        "summary": "Register for public beta",
+        "tags": [
+          "Beta Registration"
+        ]
+      }
+    },
+    "/beta-registration/community": {
+      "post": {
+        "description": "Register a wallet address for community beta",
+        "operationId": "BetaRegistrationController_registerCommunity",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Community registration request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommunityRegistrationDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Registration successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/BetaRegistrationResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input data or community limit reached"
+          },
+          "404": {
+            "description": "Community not found"
+          },
+          "409": {
+            "description": "Conflict - wallet already registered"
+          }
+        },
+        "summary": "Register for community beta",
+        "tags": [
+          "Beta Registration"
+        ]
+      }
+    },
+    "/beta-registration/stats": {
+      "get": {
+        "description": "Get overall beta registration statistics including public and community counts",
+        "operationId": "BetaRegistrationController_getOverallStats",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Registration statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/RegistrationStatsDto"
+                }
+              }
+            }
+          }
+        },
+        "summary": "Get overall registration statistics",
+        "tags": [
+          "Beta Registration"
+        ]
+      }
+    },
+    "/beta-registration/community/{communityCode}/stats": {
+      "get": {
+        "description": "Get registration statistics for a specific community",
+        "operationId": "BetaRegistrationController_getCommunityStats",
+        "parameters": [
+          {
+            "name": "communityCode",
+            "required": true,
+            "in": "path",
+            "description": "Community code",
+            "schema": {
+              "example": "CRYPTO_BROS",
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Community statistics retrieved successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityStatsDto"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Community not found"
+          }
+        },
+        "summary": "Get community registration statistics",
+        "tags": [
+          "Beta Registration"
+        ]
+      }
+    },
+    "/beta-registration/community/create": {
+      "post": {
+        "description": "Create a new beta community with registration limits",
+        "operationId": "BetaRegistrationController_createCommunity",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "description": "Community creation request",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateCommunityDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Community created successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/CommunityResponseDto"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad request - invalid input data"
+          },
+          "409": {
+            "description": "Conflict - community code already exists"
+          }
+        },
+        "summary": "Create a new community",
+        "tags": [
+          "Beta Registration"
+        ]
+      }
+    },
+    "/trade/spot/limit": {
+      "post": {
+        "description": "Execute a limit order for spot trading",
+        "operationId": "TradeController_executeSpotLimitOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LimitOrderSpotRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Spot limit order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute spot limit order",
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/trade/spot/market": {
+      "post": {
+        "description": "Execute a market order for spot trading",
+        "operationId": "TradeController_executeSpotMarketOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketOrderSpotRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Spot market order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute spot market order",
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/trade/spot/twap": {
+      "post": {
+        "description": "Execute a TWAP order for spot trading",
+        "operationId": "TradeController_executeSpotTwapOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "asset",
+                  "side",
+                  "usdcSize",
+                  "twapRunningTime",
+                  "twapRandomize"
+                ],
+                "properties": {
+                  "asset": {
+                    "type": "string",
+                    "description": "Trading asset",
+                    "example": "ETH"
+                  },
+                  "side": {
+                    "type": "string",
+                    "enum": [
+                      "BUY",
+                      "SELL"
+                    ],
+                    "description": "Trade side",
+                    "example": "BUY"
+                  },
+                  "usdcSize": {
+                    "type": "number",
+                    "description": "Size in USDC",
+                    "example": 1000
+                  },
+                  "twapRunningTime": {
+                    "type": "number",
+                    "description": "TWAP running time in minutes",
+                    "example": 60
+                  },
+                  "twapRandomize": {
+                    "type": "boolean",
+                    "description": "Whether to randomize TWAP",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Spot TWAP order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute spot TWAP order",
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/trade/perpetual/limit": {
+      "post": {
+        "description": "Execute a limit order for perpetual trading",
+        "operationId": "TradeController_executePerpetualLimitOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LimitOrderPerpetualRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perpetual limit order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute perpetual limit order",
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/trade/perpetual/market": {
+      "post": {
+        "description": "Execute a market order for perpetual trading",
+        "operationId": "TradeController_executePerpetualMarketOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/MarketOrderPerpetualRequestDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perpetual market order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute perpetual market order",
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/trade/perpetual/twap": {
+      "post": {
+        "description": "Execute a TWAP order for perpetual trading",
+        "operationId": "TradeController_executePerpetualTwapOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": [
+                  "asset",
+                  "side",
+                  "usdcSize",
+                  "leverage",
+                  "twapRunningTime",
+                  "twapRandomize"
+                ],
+                "properties": {
+                  "asset": {
+                    "type": "string",
+                    "description": "Trading asset",
+                    "example": "ETH"
+                  },
+                  "side": {
+                    "type": "string",
+                    "enum": [
+                      "BUY",
+                      "SELL"
+                    ],
+                    "description": "Trade side",
+                    "example": "BUY"
+                  },
+                  "usdcSize": {
+                    "type": "number",
+                    "description": "Size in USDC",
+                    "example": 1000
+                  },
+                  "leverage": {
+                    "type": "number",
+                    "description": "Leverage amount",
+                    "example": 5
+                  },
+                  "twapRunningTime": {
+                    "type": "number",
+                    "description": "TWAP running time in minutes",
+                    "example": 60
+                  },
+                  "twapRandomize": {
+                    "type": "boolean",
+                    "description": "Whether to randomize TWAP",
+                    "example": true
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Perpetual TWAP order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute perpetual TWAP order",
+        "tags": [
+          "Trading"
+        ]
+      }
+    },
+    "/exchange/market": {
+      "post": {
+        "description": "Execute a market order directly to Hyperliquid without executor system. Supports reduce-only and TP/SL.",
+        "operationId": "ExchangeController_executeMarketOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectMarketOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Market order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute direct market order",
+        "tags": [
+          "Exchange"
+        ]
+      }
+    },
+    "/exchange/limit": {
+      "post": {
+        "description": "Execute a limit order directly to Hyperliquid without executor system. Supports reduce-only and TP/SL.",
+        "operationId": "ExchangeController_executeLimitOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectLimitOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Limit order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute direct limit order",
+        "tags": [
+          "Exchange"
+        ]
+      }
+    },
+    "/exchange/scale": {
+      "post": {
+        "description": "Execute multiple limit orders in a price range with configurable size skew. Supports reduce-only and TP/SL.",
+        "operationId": "ExchangeController_executeScaleOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectScaleOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Scale order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute direct scale order",
+        "tags": [
+          "Exchange"
+        ]
+      }
+    },
+    "/exchange/stop-limit": {
+      "post": {
+        "description": "Execute a stop limit order with trigger price and limit price. Supports reduce-only and TP/SL.",
+        "operationId": "ExchangeController_executeStopLimitOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectStopLimitOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stop limit order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute direct stop limit order",
+        "tags": [
+          "Exchange"
+        ]
+      }
+    },
+    "/exchange/stop-market": {
+      "post": {
+        "description": "Execute a stop market order with trigger price only. Supports reduce-only and TP/SL.",
+        "operationId": "ExchangeController_executeStopMarketOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectStopMarketOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Stop market order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute direct stop market order",
+        "tags": [
+          "Exchange"
+        ]
+      }
+    },
+    "/exchange/twap": {
+      "post": {
+        "description": "Execute a Time-Weighted Average Price order with specified running time and randomization.",
+        "operationId": "ExchangeController_executeTwapOrder",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/DirectTwapOrderDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "TWAP order executed successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/OrderExecutionResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Execute TWAP order",
+        "tags": [
+          "Exchange"
+        ]
+      }
+    },
+    "/exchange/leverage": {
+      "post": {
+        "description": "Set the leverage amount and margin type (cross or isolated) for a specific trading asset.",
+        "operationId": "ExchangeController_setLeverage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/SetLeverageDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Leverage set successfully",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/SetLeverageResponseDto"
+                }
+              }
+            }
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Set leverage for an asset",
+        "tags": [
+          "Exchange"
+        ]
+      }
+    },
+    "/executions": {
+      "post": {
+        "operationId": "ExecutionsController_createUnifiedExecution",
+        "parameters": [],
+        "responses": {
+          "201": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Executions"
+        ]
+      },
+      "get": {
+        "operationId": "ExecutionsController_getUnifiedExecutions",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Executions"
+        ]
+      }
+    },
+    "/executions/{tradingOrderId}": {
+      "delete": {
+        "operationId": "ExecutionsController_cancelUnifiedExecution",
+        "parameters": [
+          {
+            "name": "tradingOrderId",
+            "required": true,
+            "in": "path",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "Executions"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "Brother Terminal Trading API",
+    "description": "API for managing trading positions and orders on the Brother Terminal platform for Hyperliquid Engine.",
+    "version": "3.0.0",
+    "contact": {
+      "name": "Brother Terminal",
+      "url": "https://brother-terminal.xyz",
+      "email": "dev@brother-terminal.xyz"
+    }
+  },
+  "tags": [],
+  "servers": [
+    {
+      "url": "https://api.brother-terminal.xyz",
+      "description": "Production (Mainnet)"
+    },
+    {
+      "url": "https://api-testnet.brother-terminal.xyz",
+      "description": "Testnet"
+    }
+  ],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "GetAgentWalletResponseDto": {
+        "type": "object",
+        "properties": {
+          "agentWalletAddress": {
+            "type": "string",
+            "description": "Agent wallet address for Hyperliquid operations",
+            "example": "0xabcdef1234567890abcdef1234567890abcdef12"
+          },
+          "agentName": {
+            "type": "string",
+            "description": "Agent identifier for this wallet",
+            "example": "Brother Terminal API"
+          },
+          "status": {
+            "type": "string",
+            "description": "Wallet status - ACTIVE (ready), EXPIRED (needs renewal), or NOT_FOUND (needs creation)",
+            "enum": [
+              "ACTIVE",
+              "EXPIRED",
+              "NOT_FOUND"
+            ],
+            "example": "ACTIVE"
+          }
+        },
+        "required": [
+          "agentWalletAddress",
+          "agentName",
+          "status"
+        ]
+      },
+      "CreateAgentWalletResponseDto": {
+        "type": "object",
+        "properties": {
+          "agentWalletAddress": {
+            "type": "string",
+            "description": "Newly created agent wallet address - user must approve this on Hyperliquid",
+            "example": "0xabcdef1234567890abcdef1234567890abcdef12"
+          },
+          "message": {
+            "type": "string",
+            "description": "Next steps instruction for user",
+            "example": "Please approve this agent wallet on Hyperliquid Exchange to enable trading"
+          }
+        },
+        "required": [
+          "agentWalletAddress",
+          "message"
+        ]
+      },
+      "EIP712AuthDetailsDto": {
+        "type": "object",
+        "properties": {
+          "signature": {
+            "type": "string",
+            "description": "EIP712 signature",
+            "example": "0x1234567890abcdef..."
+          },
+          "timestamp": {
+            "type": "number",
+            "description": "Unix timestamp used in the signed message",
+            "example": 1703872800
+          }
+        },
+        "required": [
+          "signature",
+          "timestamp"
+        ]
+      },
+      "ApiKeyAuthDetailsDto": {
+        "type": "object",
+        "properties": {
+          "apiKey": {
+            "type": "string",
+            "description": "API key for authentication",
+            "example": "abc123def456..."
+          }
+        },
+        "required": [
+          "apiKey"
+        ]
+      },
+      "AuthenticateRequestDto": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "description": "Authentication method",
+            "example": "eip712",
+            "enum": [
+              "eip712",
+              "api_key"
+            ]
+          },
+          "address": {
+            "type": "string",
+            "description": "User wallet address",
+            "example": "0x1234567890123456789012345678901234567890",
+            "pattern": "^0x[a-fA-F0-9]{40}$"
+          },
+          "details": {
+            "description": "Authentication method specific details",
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/EIP712AuthDetailsDto"
+              },
+              {
+                "$ref": "#/components/schemas/ApiKeyAuthDetailsDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "method",
+          "address",
+          "details"
+        ]
+      },
+      "AuthenticateResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "JWT access token",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token for obtaining new access tokens",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Token type",
+            "example": "Bearer"
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "Token expiration time in seconds",
+            "example": 900
+          },
+          "address": {
+            "type": "string",
+            "description": "User wallet address",
+            "example": "0x1234567890123456789012345678901234567890"
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "tokenType",
+          "expiresIn",
+          "address"
+        ]
+      },
+      "GetEIP712MessageResponseDto": {
+        "type": "object",
+        "properties": {
+          "domain": {
+            "type": "object",
+            "description": "EIP712 domain",
+            "example": {
+              "name": "Brother Terminal",
+              "version": "1",
+              "chainId": 1,
+              "verifyingContract": "0x0000000000000000000000000000000000000000"
+            }
+          },
+          "types": {
+            "type": "object",
+            "description": "EIP712 types",
+            "example": {
+              "Authentication": [
+                {
+                  "name": "address",
+                  "type": "address"
+                },
+                {
+                  "name": "timestamp",
+                  "type": "uint256"
+                },
+                {
+                  "name": "action",
+                  "type": "string"
+                }
+              ]
+            }
+          },
+          "primaryType": {
+            "type": "string",
+            "description": "Primary type for EIP712 signing",
+            "example": "Authentication"
+          },
+          "message": {
+            "type": "object",
+            "description": "Message to sign",
+            "example": {
+              "address": "0x1234567890123456789012345678901234567890",
+              "timestamp": 1703872800,
+              "action": "authenticate"
+            }
+          },
+          "timestamp": {
+            "type": "number",
+            "description": "Unix timestamp used in message",
+            "example": 1703872800
+          }
+        },
+        "required": [
+          "domain",
+          "types",
+          "primaryType",
+          "message",
+          "timestamp"
+        ]
+      },
+      "RefreshTokenRequestDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "RefreshTokenResponseDto": {
+        "type": "object",
+        "properties": {
+          "accessToken": {
+            "type": "string",
+            "description": "New JWT access token",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "refreshToken": {
+            "type": "string",
+            "description": "New refresh token",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+          },
+          "tokenType": {
+            "type": "string",
+            "description": "Token type",
+            "example": "Bearer"
+          },
+          "expiresIn": {
+            "type": "number",
+            "description": "Token expiration time in seconds",
+            "example": 900
+          }
+        },
+        "required": [
+          "accessToken",
+          "refreshToken",
+          "tokenType",
+          "expiresIn"
+        ]
+      },
+      "LogoutRequestDto": {
+        "type": "object",
+        "properties": {
+          "refreshToken": {
+            "type": "string",
+            "description": "Refresh token to invalidate",
+            "example": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9..."
+          }
+        },
+        "required": [
+          "refreshToken"
+        ]
+      },
+      "LogoutResponseDto": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string",
+            "description": "Logout status message",
+            "example": "Successfully logged out"
+          }
+        },
+        "required": [
+          "message"
+        ]
+      },
+      "Object": {
+        "type": "object",
+        "properties": {}
+      },
+      "CreatePublicRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "walletAddress": {
+            "type": "string",
+            "description": "User wallet address",
+            "example": "0x1234567890123456789012345678901234567890",
+            "pattern": "^0x[a-fA-F0-9]{40}$"
+          },
+          "twitterHandle": {
+            "type": "string",
+            "description": "Twitter handle of the user",
+            "example": "@john_doe"
+          },
+          "tweetUrl": {
+            "type": "string",
+            "description": "URL of the tweet",
+            "example": "https://twitter.com/user/status/123456789"
+          }
+        },
+        "required": [
+          "walletAddress",
+          "twitterHandle",
+          "tweetUrl"
+        ]
+      },
+      "BetaRegistrationResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Registration ID",
+            "example": "reg_123456789"
+          },
+          "walletAddress": {
+            "type": "string",
+            "description": "Wallet address",
+            "example": "0x1234567890123456789012345678901234567890"
+          },
+          "registrationType": {
+            "type": "string",
+            "description": "Registration type",
+            "enum": [
+              "PUBLIC",
+              "COMMUNITY"
+            ],
+            "example": "PUBLIC"
+          },
+          "communityCode": {
+            "type": "string",
+            "description": "Community code (only for community registrations)",
+            "example": "CRYPTO_BROS"
+          },
+          "twitterHandle": {
+            "type": "string",
+            "description": "Twitter handle (only for public registrations)",
+            "example": "@john_doe"
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Registration creation date",
+            "example": "2025-01-15T10:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "walletAddress",
+          "registrationType",
+          "createdAt"
+        ]
+      },
+      "CreateCommunityRegistrationDto": {
+        "type": "object",
+        "properties": {
+          "walletAddress": {
+            "type": "string",
+            "description": "User wallet address",
+            "example": "0x1234567890123456789012345678901234567890",
+            "pattern": "^0x[a-fA-F0-9]{40}$"
+          },
+          "communityCode": {
+            "type": "string",
+            "description": "Community code",
+            "example": "CRYPTO_BROS"
+          }
+        },
+        "required": [
+          "walletAddress",
+          "communityCode"
+        ]
+      },
+      "RegistrationStatsDto": {
+        "type": "object",
+        "properties": {
+          "totalRegistrations": {
+            "type": "number",
+            "description": "Total registrations count",
+            "example": 1250
+          },
+          "publicRegistrations": {
+            "type": "number",
+            "description": "Public registrations count",
+            "example": 850
+          },
+          "communityRegistrations": {
+            "type": "number",
+            "description": "Community registrations count",
+            "example": 400
+          },
+          "publicLimit": {
+            "type": "number",
+            "description": "Registration limit (for public)",
+            "example": 3000
+          }
+        },
+        "required": [
+          "totalRegistrations",
+          "publicRegistrations",
+          "communityRegistrations",
+          "publicLimit"
+        ]
+      },
+      "CommunityStatsDto": {
+        "type": "object",
+        "properties": {
+          "communityCode": {
+            "type": "string",
+            "description": "Community code",
+            "example": "CRYPTO_BROS"
+          },
+          "name": {
+            "type": "string",
+            "description": "Community name",
+            "example": "Crypto Brothers Community"
+          },
+          "registrationCount": {
+            "type": "number",
+            "description": "Community registration count",
+            "example": 45
+          },
+          "registrationLimit": {
+            "type": "number",
+            "description": "Community registration limit",
+            "example": 100
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether community is active",
+            "example": true
+          }
+        },
+        "required": [
+          "communityCode",
+          "name",
+          "registrationCount",
+          "registrationLimit",
+          "isActive"
+        ]
+      },
+      "CreateCommunityDto": {
+        "type": "object",
+        "properties": {
+          "communityCode": {
+            "type": "string",
+            "description": "Community code (unique identifier)",
+            "example": "CRYPTO_BROS"
+          },
+          "name": {
+            "type": "string",
+            "description": "Community name",
+            "example": "Crypto Brothers Community"
+          },
+          "description": {
+            "type": "string",
+            "description": "Community description",
+            "example": "A community of crypto enthusiasts"
+          },
+          "registrationLimit": {
+            "type": "number",
+            "description": "Registration limit for this community",
+            "example": 100,
+            "default": 1000
+          }
+        },
+        "required": [
+          "communityCode",
+          "name",
+          "registrationLimit"
+        ]
+      },
+      "CommunityResponseDto": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Community ID",
+            "example": "com_123456789"
+          },
+          "communityCode": {
+            "type": "string",
+            "description": "Community code",
+            "example": "CRYPTO_BROS"
+          },
+          "name": {
+            "type": "string",
+            "description": "Community name",
+            "example": "Crypto Brothers Community"
+          },
+          "description": {
+            "type": "string",
+            "description": "Community description",
+            "example": "A community of crypto enthusiasts"
+          },
+          "registrationLimit": {
+            "type": "number",
+            "description": "Registration limit",
+            "example": 100
+          },
+          "isActive": {
+            "type": "boolean",
+            "description": "Whether community is active",
+            "example": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "description": "Community creation date",
+            "example": "2025-01-15T10:30:00Z"
+          }
+        },
+        "required": [
+          "id",
+          "communityCode",
+          "name",
+          "description",
+          "registrationLimit",
+          "isActive",
+          "createdAt"
+        ]
+      },
+      "LimitOrderSpotRequestDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "usdcSize": {
+            "type": "number",
+            "description": "Size in USDC",
+            "example": 1000
+          },
+          "price": {
+            "type": "number",
+            "description": "Limit price for the order",
+            "example": 3500.5
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "usdcSize",
+          "price"
+        ]
+      },
+      "OrderExecutionResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether the order was successful",
+            "example": true
+          },
+          "externalTxnHash": {
+            "type": "string",
+            "description": "External transaction hash if successful",
+            "example": "0x1234567890abcdef..."
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if unsuccessful",
+            "example": "Insufficient balance"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      },
+      "MarketOrderSpotRequestDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "usdcSize": {
+            "type": "number",
+            "description": "Size in USDC",
+            "example": 1000
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "usdcSize"
+        ]
+      },
+      "LimitOrderPerpetualRequestDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "usdcSize": {
+            "type": "number",
+            "description": "Size in USDC",
+            "example": 1000
+          },
+          "leverage": {
+            "type": "number",
+            "description": "Leverage amount",
+            "example": 5
+          },
+          "price": {
+            "type": "number",
+            "description": "Limit price for the order",
+            "example": 3500.5
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "usdcSize",
+          "leverage",
+          "price"
+        ]
+      },
+      "MarketOrderPerpetualRequestDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "usdcSize": {
+            "type": "number",
+            "description": "Size in USDC",
+            "example": 1000
+          },
+          "leverage": {
+            "type": "number",
+            "description": "Leverage amount",
+            "example": 5
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "usdcSize",
+          "leverage"
+        ]
+      },
+      "TakeProfitStopLossDto": {
+        "type": "object",
+        "properties": {
+          "takeProfitPrice": {
+            "type": "number",
+            "description": "Take profit price",
+            "example": 3800
+          },
+          "stopLossPrice": {
+            "type": "number",
+            "description": "Stop loss price",
+            "example": 3200
+          }
+        }
+      },
+      "DirectMarketOrderDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size in USD",
+            "example": 1000
+          },
+          "reduceOnly": {
+            "type": "boolean",
+            "description": "Reduce only flag",
+            "example": false
+          },
+          "tpSl": {
+            "description": "Take profit and stop loss settings",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TakeProfitStopLossDto"
+              }
+            ]
+          },
+          "isSpot": {
+            "type": "boolean",
+            "description": "Whether this is a spot order (internal use)",
+            "example": false
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "size",
+          "reduceOnly"
+        ]
+      },
+      "DirectLimitOrderDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size in USD",
+            "example": 1000
+          },
+          "limitPrice": {
+            "type": "number",
+            "description": "Limit price",
+            "example": 3500
+          },
+          "reduceOnly": {
+            "type": "boolean",
+            "description": "Reduce only flag",
+            "example": false
+          },
+          "tpSl": {
+            "description": "Take profit and stop loss settings",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TakeProfitStopLossDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "size",
+          "limitPrice",
+          "reduceOnly"
+        ]
+      },
+      "DirectScaleOrderDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "startUsd": {
+            "type": "number",
+            "description": "Start USD amount",
+            "example": 3400
+          },
+          "endUsd": {
+            "type": "number",
+            "description": "End USD amount",
+            "example": 3600
+          },
+          "totalSize": {
+            "type": "number",
+            "description": "Total size in USD to distribute across all orders",
+            "example": 1000
+          },
+          "totalOrders": {
+            "type": "number",
+            "description": "Total number of orders",
+            "example": 5
+          },
+          "sizeSkew": {
+            "type": "number",
+            "description": "Size skew (-1 to 1, where -1 skews to smaller sizes first, 1 skews to larger sizes first)",
+            "example": 0
+          },
+          "reduceOnly": {
+            "type": "boolean",
+            "description": "Reduce only flag",
+            "example": false
+          },
+          "tpSl": {
+            "description": "Take profit and stop loss settings",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TakeProfitStopLossDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "startUsd",
+          "endUsd",
+          "totalSize",
+          "totalOrders",
+          "sizeSkew",
+          "reduceOnly"
+        ]
+      },
+      "DirectStopLimitOrderDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size in USD",
+            "example": 1000
+          },
+          "stopPrice": {
+            "type": "number",
+            "description": "Stop price (trigger price)",
+            "example": 3450
+          },
+          "limitPrice": {
+            "type": "number",
+            "description": "Limit price",
+            "example": 3500
+          },
+          "reduceOnly": {
+            "type": "boolean",
+            "description": "Reduce only flag",
+            "example": false
+          },
+          "tpSl": {
+            "description": "Take profit and stop loss settings",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TakeProfitStopLossDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "size",
+          "stopPrice",
+          "limitPrice",
+          "reduceOnly"
+        ]
+      },
+      "DirectStopMarketOrderDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size in USD",
+            "example": 1000
+          },
+          "stopPrice": {
+            "type": "number",
+            "description": "Stop price (trigger price)",
+            "example": 3450
+          },
+          "reduceOnly": {
+            "type": "boolean",
+            "description": "Reduce only flag",
+            "example": false
+          },
+          "tpSl": {
+            "description": "Take profit and stop loss settings",
+            "allOf": [
+              {
+                "$ref": "#/components/schemas/TakeProfitStopLossDto"
+              }
+            ]
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "size",
+          "stopPrice",
+          "reduceOnly"
+        ]
+      },
+      "DirectTwapOrderDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset",
+            "example": "ETH"
+          },
+          "side": {
+            "type": "string",
+            "description": "Trade side",
+            "enum": [
+              "BUY",
+              "SELL"
+            ],
+            "example": "BUY"
+          },
+          "size": {
+            "type": "number",
+            "description": "Size in USD",
+            "example": 1000
+          },
+          "twapRunningTime": {
+            "type": "number",
+            "description": "TWAP running time in minutes",
+            "example": 60
+          },
+          "twapRandomize": {
+            "type": "boolean",
+            "description": "Whether to randomize TWAP execution",
+            "example": true
+          },
+          "reduceOnly": {
+            "type": "boolean",
+            "description": "Reduce only flag",
+            "example": false
+          }
+        },
+        "required": [
+          "asset",
+          "side",
+          "size",
+          "twapRunningTime",
+          "twapRandomize",
+          "reduceOnly"
+        ]
+      },
+      "SetLeverageDto": {
+        "type": "object",
+        "properties": {
+          "asset": {
+            "type": "string",
+            "description": "Trading asset symbol",
+            "example": "ETH"
+          },
+          "leverage": {
+            "type": "number",
+            "description": "Leverage amount (1x to 50x depending on asset)",
+            "example": 10
+          },
+          "isCross": {
+            "type": "boolean",
+            "description": "Whether to use cross margin (true) or isolated margin (false)",
+            "example": true
+          }
+        },
+        "required": [
+          "asset",
+          "leverage",
+          "isCross"
+        ]
+      },
+      "SetLeverageResponseDto": {
+        "type": "object",
+        "properties": {
+          "success": {
+            "type": "boolean",
+            "description": "Whether leverage was set successfully",
+            "example": true
+          },
+          "error": {
+            "type": "string",
+            "description": "Error message if unsuccessful",
+            "example": "Invalid leverage for asset"
+          }
+        },
+        "required": [
+          "success"
+        ]
+      }
+    }
+  }
+}

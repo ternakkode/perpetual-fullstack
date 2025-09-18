@@ -1,0 +1,243 @@
+/* TradingView Chart Theming for Crypto Exchange - Dark Theme */
+
+:root {
+  /* Platform Colors - Transparent Background for Crypto Exchange */
+  --tv-color-platform-background: transparent;
+  --tv-color-pane-background: transparent;
+  --tv-color-pane-background-secondary: transparent;
+  
+  /* Toolbar Colors - Dark Theme */
+  --tv-color-toolbar-background: rgba(16, 16, 16, 0.9);
+  --tv-color-toolbar-button-background: transparent;
+  --tv-color-toolbar-button-background-hover: rgba(245, 245, 245, 0.05);
+  --tv-color-toolbar-button-background-expanded: rgba(245, 245, 245, 0.05);
+  --tv-color-toolbar-button-background-active: rgba(240, 255, 0, 0.1);
+  --tv-color-toolbar-button-background-active-hover: rgba(240, 255, 0, 0.15);
+  --tv-color-toolbar-button-text: rgba(245, 245, 245, 0.8);
+  --tv-color-toolbar-button-text-hover: rgba(245, 245, 245, 1);
+  --tv-color-toolbar-button-text-active: #f0ff00;
+  --tv-color-toolbar-button-text-active-hover: #f0ff00;
+  --tv-color-toolbar-divider-background: rgba(39, 39, 42, 0.5);
+  
+  /* Popup/Dropdown Colors */
+  --tv-color-popup-background: rgba(16, 16, 16, 0.95);
+  --tv-color-popup-element-text: rgba(245, 245, 245, 0.8);
+  --tv-color-popup-element-text-hover: rgba(245, 245, 245, 1);
+  --tv-color-popup-element-background-hover: rgba(245, 245, 245, 0.05);
+  --tv-color-popup-element-divider-background: rgba(39, 39, 42, 1);
+  --tv-color-popup-element-secondary-text: rgba(245, 245, 245, 0.6);
+  --tv-color-popup-element-hint-text: rgba(245, 245, 245, 0.5);
+  --tv-color-popup-element-text-active: #f0ff00;
+  --tv-color-popup-element-background-active: rgba(240, 255, 0, 0.1);
+  
+  /* Scale Colors */
+  --tv-color-scale-background: transparent;
+  --tv-color-scale-text: rgba(245, 245, 245, 0.8);
+  --tv-color-scale-line: rgba(39, 39, 42, 1);
+  
+  /* Grid Colors */
+  --tv-color-grid-line: rgba(39, 39, 42, 0.3);
+  
+  /* Candlestick Colors - Crypto Standard */
+  --tv-color-candle-up: #00d4aa;
+  --tv-color-candle-down: #ff6b6b;
+  --tv-color-candle-border-up: #00d4aa;
+  --tv-color-candle-border-down: #ff6b6b;
+  --tv-color-candle-wick-up: #00d4aa;
+  --tv-color-candle-wick-down: #ff6b6b;
+  
+  /* Volume Colors */
+  --tv-color-volume-up: rgba(0, 212, 170, 0.25);
+  --tv-color-volume-down: rgba(255, 107, 107, 0.25);
+}
+
+/* Dark theme specific overrides */
+.theme-dark:root,
+:root.theme-dark {
+  --tv-color-platform-background: transparent !important;
+  --tv-color-pane-background: transparent !important;
+  --tv-color-pane-background-secondary: transparent !important;
+}
+
+/* Chart container transparency */
+.chart-container,
+.chart-container > div,
+.chart-widget,
+.chart-widget > div,
+.tv-lightweight-charts {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Chart pane transparency */
+.pane,
+.pane-legend,
+.chart-markup-table,
+.tv-chart-renderer {
+  background: transparent !important;
+  background-color: transparent !important;
+}
+
+/* Remove TradingView branding */
+.tv-dialog-renderer a[href*="tradingview.com"]:not([class*="tv-header__link"]),
+.js-dialog a[href*="tradingview.com"]:not([class*="tv-header__link"]),
+.tv-floating-toolbar__widget-wrapper a[href*="tradingview.com"] {
+  display: none !important;
+}
+
+/* Hide watermark */
+.tv-chart__watermark,
+.watermark,
+[data-name="legend-source-item"] a[href*="tradingview.com"] {
+  display: none !important;
+}
+
+/* Toolbar styling */
+.tv-header,
+.tv-chart-toolbar,
+.tv-floating-toolbar {
+  background: rgba(16, 16, 16, 0.9) !important;
+  border: none !important;
+  backdrop-filter: blur(8px);
+}
+
+/* Button styling with consistent theme */
+.tv-header__button,
+.tv-chart-toolbar__button,
+.tv-floating-toolbar__button,
+.tv-control-button {
+  background: transparent !important;
+  border: 1px solid rgba(39, 39, 42, 0.5) !important;
+  color: rgba(245, 245, 245, 0.8) !important;
+  border-radius: 4px !important;
+  transition: all 0.2s ease !important;
+}
+
+.tv-header__button:hover,
+.tv-chart-toolbar__button:hover,
+.tv-floating-toolbar__button:hover,
+.tv-control-button:hover {
+  background: rgba(245, 245, 245, 0.05) !important;
+  border-color: rgba(245, 245, 245, 0.1) !important;
+  color: rgba(245, 245, 245, 1) !important;
+}
+
+.tv-header__button--active,
+.tv-chart-toolbar__button--active,
+.tv-floating-toolbar__button--active,
+.tv-control-button--active {
+  background: rgba(240, 255, 0, 0.1) !important;
+  border-color: rgba(240, 255, 0, 0.3) !important;
+  color: #f0ff00 !important;
+}
+
+/* Dropdown menus */
+.tv-dropdown-behavior,
+.tv-context-menu,
+.tv-menu,
+.tv-dialog {
+  background: rgba(16, 16, 16, 0.95) !important;
+  border: 1px solid rgba(39, 39, 42, 1) !important;
+  backdrop-filter: blur(8px);
+  border-radius: 8px !important;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5) !important;
+}
+
+.tv-dropdown-behavior__item,
+.tv-context-menu__item,
+.tv-menu__item,
+.tv-dialog__content {
+  background: transparent !important;
+  color: rgba(245, 245, 245, 0.8) !important;
+  border-radius: 4px !important;
+  margin: 2px !important;
+}
+
+.tv-dropdown-behavior__item:hover,
+.tv-context-menu__item:hover,
+.tv-menu__item:hover {
+  background: rgba(245, 245, 245, 0.05) !important;
+  color: rgba(245, 245, 245, 1) !important;
+}
+
+/* Input fields */
+.tv-control-input,
+.tv-control-select,
+.tv-text-input {
+  background: rgba(16, 16, 16, 0.8) !important;
+  color: rgba(245, 245, 245, 0.9) !important;
+  border: 1px solid rgba(39, 39, 42, 1) !important;
+  border-radius: 4px !important;
+}
+
+.tv-control-input:focus,
+.tv-control-select:focus,
+.tv-text-input:focus {
+  border-color: #f0ff00 !important;
+  box-shadow: 0 0 0 2px rgba(240, 255, 0, 0.1) !important;
+}
+
+/* Loading screen */
+.tv-spinner,
+.tv-spinner__fade {
+  background: transparent !important;
+}
+
+.tv-spinner__item {
+  background: #f0ff00 !important;
+}
+
+/* Scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(39, 39, 42, 0.3);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(245, 245, 245, 0.2);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(245, 245, 245, 0.3);
+}
+
+/* Legend styling */
+.legend,
+.tv-chart-legend {
+  background: rgba(16, 16, 16, 0.8) !important;
+  color: rgba(245, 245, 245, 0.9) !important;
+  border: 1px solid rgba(39, 39, 42, 0.5) !important;
+  border-radius: 6px !important;
+  backdrop-filter: blur(4px);
+}
+
+/* Price labels and crosshair */
+.tv-price-scale__label,
+.tv-time-scale__label,
+.crosshair-label {
+  background: rgba(16, 16, 16, 0.9) !important;
+  color: rgba(245, 245, 245, 0.9) !important;
+  border: 1px solid rgba(39, 39, 42, 1) !important;
+  border-radius: 3px !important;
+}
+
+/* Study/Indicator colors */
+.tv-study-inputs-dialog,
+.tv-dialog__section,
+.tv-dialog__body {
+  background: rgba(16, 16, 16, 0.95) !important;
+  color: rgba(245, 245, 245, 0.9) !important;
+  border: 1px solid rgba(39, 39, 42, 1) !important;
+}
+
+/* Ensure all backgrounds are transparent */
+* {
+  --tv-color-platform-background: transparent !important;
+  --tv-color-pane-background: transparent !important;
+}

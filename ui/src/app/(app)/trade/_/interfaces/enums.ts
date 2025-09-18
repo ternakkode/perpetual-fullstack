@@ -1,0 +1,1 @@
+// Empty file - chart enums no longer needed with TradingView

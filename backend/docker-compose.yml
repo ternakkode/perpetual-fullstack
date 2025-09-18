@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  app:
+    container_name: brother-terminal-prod
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production   # build from the final production stage
+    image: brother-terminal-prod:latest
+    ports:
+      - "${PORT:-8080}:80"   # map host port from .env or default to 8080
+    env_file:
+      - .env   # load environment variables from .env file
+    restart: unless-stopped
+    depends_on:
+      - db
+      - redis
+
+  db:
+    container_name: pg
+    image: postgres:15-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: ${DB_NAME:-brother_terminal}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+  redis:
+    container_name: redis
+    image: redis:7-alpine
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+
+volumes:
+  postgres_data:
+  redis_data:

@@ -1,0 +1,21 @@
+{
+  "$schema": "https://ui.shadcn.com/schema.json",
+  "style": "default",
+  "rsc": true,
+  "tsx": true,
+  "tailwind": {
+    "config": "tailwind.config.ts",
+    "css": "src/app/globals.css",
+    "baseColor": "neutral",
+    "cssVariables": true,
+    "prefix": ""
+  },
+  "aliases": {
+    "components": "@brother-terminal/components",
+    "utils": "@brother-terminal/lib/utils",
+    "ui": "@brother-terminal/components/ui",
+    "lib": "@brother-terminal/lib",
+    "hooks": "@brother-terminal/hooks"
+  },
+  "iconLibrary": "lucide"
+}

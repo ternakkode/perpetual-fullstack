@@ -1,0 +1,26 @@
+{
+  "name": "Coming Soon - Brother Terminal",
+  "short_name": "Brother Terminal",
+  "description": "Revolutionary AI-powered trading terminal on Hyperliquid. Coming soon - join our beta waitlist.",
+  "start_url": "/beta",
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "theme_color": "#f0ff00",
+  "background_color": "#000000",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "categories": ["finance", "productivity", "utilities"]
+}
